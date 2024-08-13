@@ -1,21 +1,47 @@
 import React, { useState } from 'react';
+import axiosInstance from './axiosInstance'; // Adjust the path based on your directory structure
 import './bootstrap/dist/css/bootstrap.min.css';
-import './styles/SignupPage.css'// Import your custom CSS
+import './styles/SignupPage.css';
 
 const SignUpPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission logic here
-        console.log('Username:', username);
-        console.log('Password:', password);
+        setIsSubmitting(true);
+        setError(null);
+
+        try {
+            const response = await axiosInstance.post('http://localhost:8080/admin/login', {
+                username,
+                password,
+            });
+
+            console.log('Login successful:', response.data);
+
+            // Save the JWT token to localStorage or sessionStorage
+            localStorage.setItem('jwtToken', response.data.token);
+
+            // Redirect the user or handle post-login state here
+            window.location.href = '/';
+        } catch (err) {
+            if (err.response && err.response.data) {
+                setError(err.response.data.message || 'Login failed');
+            } else {
+                setError('An error occurred. Please try again later.');
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
     return (
         <div className="signup-container">
             <div className="icon-container">
-                <img src={`${process.env.PUBLIC_URL}/images/burger-icon.png`} alt="Sign Up Icon" /> {/* Replace with your image URL */}
+                <img src={`${process.env.PUBLIC_URL}/images/burger-icon.png`} alt="Sign Up Icon" />
             </div>
             <div className="signup-form">
                 <h2>Sign Up</h2>
@@ -42,13 +68,14 @@ const SignUpPage = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="col btn btn-pink-moon">Sign Up</button>
+                    {error && <div className="alert alert-danger" role="alert">{error}</div>}
+                    <button type="submit" className="col btn btn-pink-moon" disabled={isSubmitting}>
+                        {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+                    </button>
                 </form>
             </div>
         </div>
     );
 };
-
-
 
 export default SignUpPage;

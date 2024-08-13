@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axiosInstance from './axiosInstance'; // Import axiosInstance
 import Tokens from './TokensRecharge';
 import Students from './StudentsAccount';
 import Menu from './ItemMenu';
@@ -23,9 +24,16 @@ export default function Navbar() {
         setProfileDropdownOpen(!profileDropdownOpen);
     };
 
-    const handleLogout = () => {
-        alert("Logging out...");
-        // Implement logout logic here
+    const handleLogout = async () => {
+        try {
+            await axiosInstance.post('/admin/logout'); // Make a POST request to the logout endpoint
+            localStorage.removeItem('jwtToken'); // Remove token from local storage
+            alert("You have been logged out.");
+            window.location.href = '/signup'; // Redirect to login page or home page
+        } catch (error) {
+            console.error('Error logging out:', error);
+            alert("Error logging out. Please try again.");
+        }
     };
 
     return (
