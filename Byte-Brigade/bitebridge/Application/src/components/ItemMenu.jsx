@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axiosInstance from "./axiosInstance"; // Adjust the path based on your directory structure
+import axiosInstance from "./Admin/axiosInstance"; // Adjust the path based on your directory structure
 import "./styles/ItemMenu.css";
 
 const ItemMenu = () => {

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import axiosInstance from '../axiosInstance'; // Import axiosInstance for making API requests
 import '../styles/studentNavbar.css';
+import Friends from './FriendList';
 import Home from './HomeMenu';
 
 export default function NavbarStudent() {
@@ -21,9 +23,16 @@ export default function NavbarStudent() {
         setProfileDropdownOpen(!profileDropdownOpen);
     };
 
-    const handleLogout = () => {
-        alert("Logging out...");
-        // Implement logout logic here
+    const handleLogout = async () => {
+        try {
+            await axiosInstance.post('/student/logout'); // Make a POST request to the student logout endpoint
+            localStorage.removeItem('jwtToken'); // Remove token from local storage
+            alert("You have been logged out.");
+            window.location.href = '/signup'; // Redirect to login page or home page
+        } catch (error) {
+            console.error('Error logging out:', error);
+            alert("Error logging out. Please try again.");
+        }
     };
 
     return (
@@ -61,7 +70,7 @@ export default function NavbarStudent() {
             <div className="content-area">
                 {/* Display different content based on selected item */}
                 {selectedItem === "Home" && <Home />}
-                {selectedItem === "FriendList" && <p>Friend List</p>}
+                {selectedItem === "FriendList" && <Friends />}
                 {selectedItem === "Cart" && <p>Cart Page</p>}
                 {!selectedItem && <h1>Welcome!</h1>}
             </div>

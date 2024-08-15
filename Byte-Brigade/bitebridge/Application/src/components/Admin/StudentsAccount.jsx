@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "./axiosInstance"; // Import the Axios instance
-import "./styles/studentsAccount.css";
+import "../styles/studentsAccount.css";
 
 // AddStudentForm Component
 const AddStudentForm = ({ onStudentAdded }) => {
