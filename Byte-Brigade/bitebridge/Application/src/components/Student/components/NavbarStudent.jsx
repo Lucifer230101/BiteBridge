@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import axiosInstance from '../axiosInstance'; // Import axiosInstance for making API requests
+import axiosInstance from '../axiosInstance';
 import '../styles/studentNavbar.css';
 import Friends from './FriendList';
 import Home from './HomeMenu';
+import Cart from "./Cart";
 
 export default function NavbarStudent() {
-    const [isOpen, setIsOpen] = useState(false); // Controls dropdown menu visibility
+    const [isOpen, setIsOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState("Home");
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+    const [cartItems, setCartItems] = useState([]); // State to hold cart items
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -15,8 +17,6 @@ export default function NavbarStudent() {
 
     const handleMenuItemClick = (item) => {
         setSelectedItem(item);
-        // Optionally, you can keep the dropdown menu open or not
-        // setIsOpen(false); // Uncomment if you want to close the dropdown after selection
     };
 
     const toggleProfileDropdown = () => {
@@ -25,14 +25,21 @@ export default function NavbarStudent() {
 
     const handleLogout = async () => {
         try {
-            await axiosInstance.post('/student/logout'); // Make a POST request to the student logout endpoint
-            localStorage.removeItem('jwtToken'); // Remove token from local storage
+            await axiosInstance.post('/student/logout');
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('cartItems'); // Clear cart items on logout
             alert("You have been logged out.");
-            window.location.href = '/signup'; // Redirect to login page or home page
+            window.location.href = '/signup';
         } catch (error) {
             console.error('Error logging out:', error);
             alert("Error logging out. Please try again.");
         }
+    };
+    
+
+    const handleViewCart = (updatedCartItems) => {
+        setCartItems(updatedCartItems); // Update the cartItems state
+        setSelectedItem("Cart");
     };
 
     return (
@@ -50,7 +57,6 @@ export default function NavbarStudent() {
                     <ul>
                         <li className="profileImage" onClick={toggleProfileDropdown}>
                             <img src="/images/profileIcon.png" alt="ProfileIcon" />
-                            {/* Profile dropdown */}
                             <div className={`profile-dropdown ${profileDropdownOpen ? 'open' : ''}`}>
                                 <ul>
                                     <li onClick={handleLogout}>Logout</li>
@@ -68,10 +74,15 @@ export default function NavbarStudent() {
                 </div>
             </div>
             <div className="content-area">
-                {/* Display different content based on selected item */}
-                {selectedItem === "Home" && <Home />}
+                {selectedItem === "Home" && (
+                    <Home 
+                        onViewCart={handleViewCart} 
+                        cartItems={cartItems} // Pass current cartItems to Home
+                        setCartItems={setCartItems} // Pass setCartItems to update cartItems from Home
+                    />
+                )}
                 {selectedItem === "FriendList" && <Friends />}
-                {selectedItem === "Cart" && <p>Cart Page</p>}
+                {selectedItem === "Cart" && <Cart cartItems={cartItems} />} {/* Pass cartItems to Cart */}
                 {!selectedItem && <h1>Welcome!</h1>}
             </div>
         </div>

@@ -69,16 +69,14 @@ const FriendList = () => {
   );
 };
 
-// AddFriendForm Component
 const AddFriendForm = ({ onFriendAdded }) => {
   const [prn, setPrn] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.post("/friends", {
-        prn,
-      });
+      // Update the POST request to include the PRN in the URL
+      await axiosInstance.post(`/student/friend/${prn}`);
       alert("Friend added successfully");
       setPrn("");
       if (onFriendAdded) onFriendAdded();
@@ -103,7 +101,6 @@ const AddFriendForm = ({ onFriendAdded }) => {
     </form>
   );
 };
-
 // DeleteFriendForm Component
 const DeleteFriendForm = ({ onFriendDeleted }) => {
   const [friendId, setFriendId] = useState("");
