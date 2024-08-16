@@ -5,6 +5,8 @@ import Friends from './FriendList';
 import Home from './HomeMenu';
 import Cart from "./Cart";
 import UserProfile from './UserProfile'; // Import the new component
+import OrdersTable from './OrdersTable'; // Import the OrdersTable component
+import OrderHistory from './OrderHistory';
 
 export default function NavbarStudent() {
     const [isOpen, setIsOpen] = useState(false);
@@ -95,6 +97,8 @@ export default function NavbarStudent() {
                         <li onClick={() => handleMenuItemClick("Home")}>Home</li>
                         <li onClick={() => handleMenuItemClick("FriendList")}>FriendList</li>
                         <li onClick={() => handleMenuItemClick("Cart")}>Cart</li>
+                        <li onClick={() => handleMenuItemClick("Your Orders")}>Your Orders</li> {/* Added new menu item */}
+                        <li onClick={() => handleMenuItemClick("Order History")}>Order History</li>
                     </ul>
                 </div>
             </div>
@@ -115,6 +119,8 @@ export default function NavbarStudent() {
                         updateTokenBalance={updateTokenBalance} // Pass updateTokenBalance to Cart
                     />
                 )}
+                {selectedItem === "Your Orders" && <OrdersTable />} {/* Display OrdersTable component */}
+                {selectedItem === "Order History" && <OrderHistory />}
                 {!selectedItem && <h1>Welcome!</h1>}
             </div>
         </div>

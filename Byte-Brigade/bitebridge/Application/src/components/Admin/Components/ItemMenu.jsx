@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axiosInstance from "./Admin/axiosInstance"; // Adjust the path based on your directory structure
-import "./styles/ItemMenu.css";
+import axiosInstance from "../axiosInstance"; // Adjust the path based on your directory structure
+import "../styles/ItemMenu.css";
 
 const ItemMenu = () => {
   const [items, setItems] = useState([]);
@@ -230,7 +230,7 @@ const ItemMenu = () => {
               <td>{item.id}</td>
               <td>{item.name}</td>
               <td>
-                {item.price !== undefined ? item.price.toFixed(2) : "N/A"}
+              ₹{item.price !== undefined ? item.price.toFixed(2) : "N/A"}
               </td>
               <td>
                 {item.quantity_remaining !== undefined

@@ -6,6 +6,7 @@ const FriendList = () => {
   const [friends, setFriends] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showDeleteForm, setShowDeleteForm] = useState(false);
+  const [showDelegateForm, setShowDelegateForm] = useState(false); // State to control Delegate form visibility
 
   useEffect(() => {
     fetchFriends();
@@ -32,7 +33,6 @@ const FriendList = () => {
 
   return (
     <div className="friend-list">
-      <h2>Friend List</h2>
       <div className="friend-button">
         <button onClick={() => setShowAddForm(!showAddForm)}>
           {showAddForm ? "Cancel" : "Add Friend"}
@@ -40,11 +40,15 @@ const FriendList = () => {
         <button onClick={() => setShowDeleteForm(!showDeleteForm)}>
           {showDeleteForm ? "Cancel" : "Delete Friend"}
         </button>
+        <button onClick={() => setShowDelegateForm(!showDelegateForm)}>
+          {showDelegateForm ? "Cancel" : "Delegate Order"}
+        </button>
       </div>
 
-      {/* Conditionally render Add and Delete forms */}
+      {/* Conditionally render Add, Delete, and Delegate forms */}
       {showAddForm && <AddFriendForm onFriendAdded={handleFriendAdded} />}
       {showDeleteForm && <DeleteFriendForm onFriendDeleted={handleFriendDeleted} />}
+      {showDelegateForm && <DelegateOrderForm />} {/* Added new form */}
 
       <h3>Friends List</h3>
       <table className="FriendTable">
@@ -59,7 +63,7 @@ const FriendList = () => {
           {friends.map((friend) => (
             <tr key={friend.id}>
               <td>{friend.id}</td>
-              <td>{friend.first_name+" "+friend.last_name}</td>
+              <td>{friend.first_name + " " + friend.last_name}</td>
               <td>{friend.prn}</td>
             </tr>
           ))}
@@ -69,13 +73,13 @@ const FriendList = () => {
   );
 };
 
+// AddFriendForm Component
 const AddFriendForm = ({ onFriendAdded }) => {
   const [prn, setPrn] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Update the POST request to include the PRN in the URL
       await axiosInstance.post(`/student/friend/${prn}`);
       alert("Friend added successfully");
       setPrn("");
@@ -101,6 +105,7 @@ const AddFriendForm = ({ onFriendAdded }) => {
     </form>
   );
 };
+
 // DeleteFriendForm Component
 const DeleteFriendForm = ({ onFriendDeleted }) => {
   const [friendId, setFriendId] = useState("");
@@ -130,6 +135,49 @@ const DeleteFriendForm = ({ onFriendDeleted }) => {
         />
       </label>
       <button type="submit">Delete Friend</button>
+    </form>
+  );
+};
+
+// DelegateOrderForm Component
+const DelegateOrderForm = () => {
+  const [orderId, setOrderId] = useState("");
+  const [friendId, setFriendId] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axiosInstance.put(`/student/delegate/${orderId}/${friendId}`);
+      alert("Order delegated successfully");
+      setOrderId("");
+      setFriendId("");
+    } catch (error) {
+      console.error("Error delegating order", error);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="form">
+      <h3>Delegate Order</h3>
+      <label>
+        Order ID:
+        <input
+          type="text"
+          value={orderId}
+          onChange={(e) => setOrderId(e.target.value)}
+          required
+        />
+      </label>
+      <label>
+        Friend ID:
+        <input
+          type="text"
+          value={friendId}
+          onChange={(e) => setFriendId(e.target.value)}
+          required
+        />
+      </label>
+      <button type="submit">Delegate Order</button>
     </form>
   );
 };
