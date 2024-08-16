@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosInstance from '../axiosInstance';
 import '../styles/studentNavbar.css';
 import Friends from './FriendList';
 import Home from './HomeMenu';
 import Cart from "./Cart";
+import UserProfile from './UserProfile'; // Import the new component
 
 export default function NavbarStudent() {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState("Home");
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
     const [cartItems, setCartItems] = useState([]); // State to hold cart items
+    const [orderSelection, setOrderSelection] = useState([]); // State to hold order selection
+    const [tokenBalance, setTokenBalance] = useState(0); // State to hold token balance
+    const [userName, setUserName] = useState(""); // State to hold user name
 
     const toggleMenu = () => {
         setIsOpen(!isOpen);
@@ -35,12 +39,33 @@ export default function NavbarStudent() {
             alert("Error logging out. Please try again.");
         }
     };
-    
 
     const handleViewCart = (updatedCartItems) => {
         setCartItems(updatedCartItems); // Update the cartItems state
         setSelectedItem("Cart");
     };
+
+    const resetOrderSelection = () => {
+        setOrderSelection([]); // Clear order selection
+    };
+
+    const fetchUserProfile = async () => {
+        try {
+            const response = await axiosInstance.get('/student/studentdetails'); // Update endpoint as needed
+            setUserName(response.data.first_name);
+            setTokenBalance(response.data.tokens_balance);
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+        }
+    };
+
+    const updateTokenBalance = async () => {
+        await fetchUserProfile(); // Update token balance after order
+    };
+
+    useEffect(() => {
+        fetchUserProfile(); // Fetch user profile and token balance on component mount
+    }, []);
 
     return (
         <div className="mainContainer">
@@ -74,6 +99,7 @@ export default function NavbarStudent() {
                 </div>
             </div>
             <div className="content-area">
+                <UserProfile userName={userName} tokenBalance={tokenBalance} /> {/* Pass userName and tokenBalance to UserProfile */}
                 {selectedItem === "Home" && (
                     <Home 
                         onViewCart={handleViewCart} 
@@ -82,7 +108,13 @@ export default function NavbarStudent() {
                     />
                 )}
                 {selectedItem === "FriendList" && <Friends />}
-                {selectedItem === "Cart" && <Cart cartItems={cartItems} />} {/* Pass cartItems to Cart */}
+                {selectedItem === "Cart" && (
+                    <Cart 
+                        setCartItems={setCartItems} // Pass setCartItems to Cart
+                        resetOrderSelection={resetOrderSelection} // Pass resetOrderSelection to Cart
+                        updateTokenBalance={updateTokenBalance} // Pass updateTokenBalance to Cart
+                    />
+                )}
                 {!selectedItem && <h1>Welcome!</h1>}
             </div>
         </div>

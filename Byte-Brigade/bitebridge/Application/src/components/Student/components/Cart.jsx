@@ -3,7 +3,7 @@ import axiosInstance from '../axiosInstance';
 import { useLocation } from 'react-router-dom';
 import '../styles/Cart.css'; // Assume you have some basic styles for the table
 
-function Cart() {
+function Cart({ setCartItems, resetOrderSelection, updateTokenBalance }) {
     const location = useLocation();
     const cartItems = location.state?.cartItems || JSON.parse(localStorage.getItem('cartItems')) || [];
 
@@ -19,16 +19,34 @@ function Cart() {
 
     const handlePlaceOrder = async () => {
         try {
+            const totalPrice = getTotalPrice(); // Get total price as string
+            const response = await axiosInstance.get('/student/studentdetails'); // Fetch user details to get token balance
+            const availableBalance = response.data.tokens_balance;
+
+            if (parseFloat(totalPrice) > availableBalance) {
+                // If total price is greater than available balance, show an alert with the backend message
+                alert('Insufficient balance. Please add more tokens to place the order.');
+                return;
+            }
+
             const orderDetails = cartItems.map(item => ({
                 dishId: item.dish_id, // Match the property name expected by backend
                 quantity: item.quantity,
             }));
-    
+
             console.log("Order Details:", orderDetails); // Log the payload for inspection
-    
+
             await axiosInstance.post('/student/order', orderDetails); // Send array directly
+
+            // Clear the cart and reset order selection
+            setCartItems([]);
+            resetOrderSelection(); // Call function to reset order selection
+            localStorage.removeItem('cartItems'); // Remove from local storage
+
+            // Fetch the updated token balance
+            await updateTokenBalance();
+
             alert('Order placed successfully!');
-            localStorage.removeItem('cartItems');
         } catch (error) {
             console.error('Error placing order:', error);
             alert('There was an issue placing your order. Please try again.');

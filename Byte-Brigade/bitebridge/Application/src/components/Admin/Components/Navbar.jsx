@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import axiosInstance from './axiosInstance'; // Import axiosInstance
+import axiosInstance from '../axiosInstance'; // Import axiosInstance
 import Tokens from './TokensRecharge';
 import Students from './StudentsAccount';
-import Menu from '../ItemMenu';
+import Menu from '../../ItemMenu';
 import '../styles/navbar.css';
 
 export default function Navbar() {

@@ -18,13 +18,13 @@ const SignUpPage = () => {
         let endpoint = '';
         switch (activeForm) {
             case 'admin':
-                endpoint = 'http://localhost:8080/admin/login';
+                endpoint = '/admin/login';
                 break;
             case 'student':
-                endpoint = 'http://localhost:8080/student/login';
+                endpoint = '/student/login';
                 break;
             case 'canteen':
-                endpoint = 'http://localhost:8080/canteen/login';
+                endpoint = '/canteen/login';
                 break;
             default:
                 return;
@@ -50,7 +50,7 @@ const SignUpPage = () => {
                     window.location.href = '/student';
                     break;
                 case 'canteen':
-                    window.location.href = '/';
+                    window.location.href = '/canteen';
                     break;
                 default:
                     window.location.href = '/';
