@@ -4,7 +4,7 @@
     padding: 30px;
     max-width: 900px;
     margin: 0 auto;
-    background: linear-gradient(to right,hsl(10, 18%, 93%), #ffffff);
+    background-color: blueviolet;
     border-radius: 12px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   }
